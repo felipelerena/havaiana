@@ -1,0 +1,23 @@
+<h2>{{ item }}</h2>
+<table>
+{% for attr in attrs %}
+    <tr>
+        <td>
+            {% if attr.2 %}
+                <strong>{{ attr.0 }}</strong>
+            {% else %}
+                {{ attr.0 }}
+            {% endif %}
+        </td>
+        <td>
+            {% if attr.3 %}
+                <a href="{{ attr.3 }}">{{ attr.1 }}</a>
+            {% else %}
+                {{ attr.1 }}
+            {% endif %}
+        </td>
+    </tr>
+{% endfor %}
+</table>
+<br>
+<a href="/{{ class_name }}">Volver atras</a>
