@@ -13,7 +13,7 @@
             {% if attr.3 %}
                 <a href="{{ attr.3 }}">{{ attr.1 }}</a>
             {% else %}
-                {{ attr.1 }}
+                {{ attr.1|safe }}
             {% endif %}
         </td>
     </tr>
