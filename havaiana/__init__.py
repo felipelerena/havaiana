@@ -1,6 +1,8 @@
-from flask import Flask, render_template
 from inspect import getmembers
 from ojota import Ojota
+
+from flask.helpers import url_for
+from flask import Flask, render_template
 
 
 def get_ojota_children(package):
@@ -15,7 +17,10 @@ def get_ojota_children(package):
     return hijos
 
 def default_renderer(field, item):
-    required = field in item.required_fields
+    if item.required_fields is not None:
+        required = field in item.required_fields
+    else:
+        required = False
     value = getattr(item, field)
     relation_data = item.relations.get(field)
 
@@ -35,12 +40,13 @@ def render_field(field, item, renderers):
     return render(field, item)
 
 def run(package, renderers=None):
+    if renderers is None:
+        renderers  = []
     classes = get_ojota_children(package)
     app = Flask(__name__)
     classes_map = {}
     for item in classes:
         classes_map[item[1].plural_name] = item
-        #print item[1].all()
 
     @app.route("/<name>")
     @app.route("/<name>/<pk>")
@@ -58,6 +64,8 @@ def run(package, renderers=None):
             attrs = []
             for field in item.fields:
                 attrs.append(render_field(field, item, class_renderers))
+            for bw_rel in item.backwards_relations:
+                attrs.append(render_field(bw_rel, item, class_renderers))
 
             return render_template('item.html', item=item, attrs=attrs,
                                    class_name=name)
@@ -65,6 +73,8 @@ def run(package, renderers=None):
     @app.route('/')
     def index():
         return render_template('tables.html', classes=classes_map.keys())
+
+    #url_for('static', filename='style.css')
 
     app.debug = True
     app.run()
