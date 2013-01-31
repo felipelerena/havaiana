@@ -1,0 +1,10 @@
+[
+    {
+      "pk": "1",
+      "name": "Main course"
+    },
+    {
+      "pk": "2",
+      "name": "Dessert"
+    }
+]

@@ -20,17 +20,5 @@ from ojota import set_data_source
 
 import ojota.examples.examples as pkg
 
-def candidato_list(field, item):
-    required = field in item.required_fields
-    lista_cand = getattr(item, field)
-    value = ""
-    for element in lista_cand:
-        value += '<a href="/Candidatos/%s">%s</a> ' % (element, element)
-
-    related = False
-
-    return (field, value, required, related)
-
 if __name__ == '__main__':
-    #renderers = [('Lista', 'cod_candidatos', candidato_list)]
     run(pkg)

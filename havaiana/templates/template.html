@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Havaiana</title>
+    <title>{{title}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -38,15 +38,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="/">Havaiana</a>
+          <a class="brand" href="/">{{title}}</a>
           <div class="nav-collapse collapse">
-            <!--
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li><a href="http://havaiana.rtfd.org" target="_blank">Havaiana docs</a></li>
+              <li><a href="http://ojota.rtfd.org" target="_blank">Ojota docs</a></li>
             </ul>
-            -->
           </div><!--/.nav-collapse -->
         </div>
       </div>
@@ -56,25 +53,15 @@
       {% block content %}
 
       {% endblock %}
+      <div class="pull-right">
+        Rendered with love, magic and Python using <a
+        href="http://havaiana.rtfd.org" target="_blank">Havaiana</a>
+      </div>
     </div> <!-- /container -->
 
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="/media/bootstrap/js/jquery.js"></script>
-    <script src="/media/bootstrap/js/bootstrap-transition.js"></script>
-    <script src="/media/bootstrap/js/bootstrap-alert.js"></script>
-    <script src="/media/bootstrap/js/bootstrap-modal.js"></script>
-    <script src="/media/bootstrap/js/bootstrap-dropdown.js"></script>
-    <script src="/media/bootstrap/js/bootstrap-scrollspy.js"></script>
-    <script src="/media/bootstrap/js/bootstrap-tab.js"></script>
-    <script src="/media/bootstrap/js/bootstrap-tooltip.js"></script>
-    <script src="/media/bootstrap/js/bootstrap-popover.js"></script>
-    <script src="/media/bootstrap/js/bootstrap-button.js"></script>
-    <script src="/media/bootstrap/js/bootstrap-collapse.js"></script>
-    <script src="/media/bootstrap/js/bootstrap-carousel.js"></script>
-    <script src="/media/bootstrap/js/bootstrap-typeahead.js"></script>
-
   </body>
 </html>
 

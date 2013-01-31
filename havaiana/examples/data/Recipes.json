@@ -1,0 +1,14 @@
+[
+    {
+      "pk": "1",
+      "name": "chicken with fries",
+      "instructions": "Fry the chicken, fry the fries",
+      "type_id": "1"
+    },
+    {
+      "pk": "2",
+      "name": "Strawberry Ice cream",
+      "instructions": "Use the blender!",
+      "type_id": "2"
+    }
+]

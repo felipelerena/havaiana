@@ -1,0 +1,27 @@
+[
+    {
+      "pk": "1",
+      "name": "Chicken",
+      "recipe_id": "1"
+    },
+    {
+      "pk": "2",
+      "name": "Fries",
+      "recipe_id": "1"
+    },
+    {
+      "pk": "3",
+      "name": "Strawberies",
+      "recipe_id": "2"
+    },
+    {
+      "pk": "4",
+      "name": "Ice",
+      "recipe_id": "2"
+    },
+    {
+      "pk": "5",
+      "name": "Milk",
+      "recipe_id": "2"
+    }
+]
