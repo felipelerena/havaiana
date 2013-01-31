@@ -53,8 +53,6 @@ def run(package, renderers=None):
     for item in classes:
         classes_map[item[1].plural_name] = item
 
-    import os
-
     @app.route("/<name>")
     @app.route("/<name>/<pk>")
     def table(name, pk=None):
