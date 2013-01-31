@@ -1,9 +1,8 @@
 from inspect import getmembers
 from ojota import Ojota
 
-from flask.helpers import url_for
+from flask.helpers import url_for, send_file
 from flask import Flask, render_template
-
 
 def get_ojota_children(package):
     hijos = []
@@ -70,11 +69,16 @@ def run(package, renderers=None):
             return render_template('item.html', item=item, attrs=attrs,
                                    class_name=name)
 
+    @app.route('/media/<path:filename>')
+    def custom_static(filename):
+        parts = filename.split("/")
+        dir_name = "/".join(parts[:-1])
+        filename = parts[-1]
+        return send_file("templates/static/%s/%s" % (dir_name, filename))
+
     @app.route('/')
     def index():
         return render_template('tables.html', classes=classes_map.keys())
-
-    #url_for('static', filename='style.css')
 
     app.debug = True
     app.run()

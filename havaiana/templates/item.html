@@ -1,10 +1,7 @@
-<html>
-<head>
-    <link rel="stylesheet" type="text/css" media="all" href="/static/styles.css">
-</head>
-<body>
-    <h2>{{ item }}</h2>
-    <table>
+{% extends "template.html" %}
+{% block content %}
+    <h3>{{ item }}</h3>
+    <table class="table table-bordered table-striped">
     {% for attr in attrs %}
         <tr>
             <td>
@@ -24,7 +21,9 @@
         </tr>
     {% endfor %}
     </table>
-    <br>
-    <a href="/{{ class_name }}">Volver</a>
-</body>
-</html>
+    <ul class="pager">
+      <li class="previous">
+        <a href="/{{ class_name }}">← Back</a>
+      </li>
+    </ul>
+{% endblock %}
