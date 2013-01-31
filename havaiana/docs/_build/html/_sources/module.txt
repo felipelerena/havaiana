@@ -1,0 +1,4 @@
+Example
+=======
+
+.. literalinclude:: ../example.py
