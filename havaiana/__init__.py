@@ -1,8 +1,13 @@
+import os
+
 from inspect import getmembers
 from ojota import Ojota
 
 from flask.helpers import url_for, send_file
 from flask import Flask, render_template
+
+from jinja2 import FileSystemLoader
+template_path = os.path.join(os.path.dirname(__file__), "templates")
 
 def get_ojota_children(package):
     hijos = []
@@ -43,9 +48,12 @@ def run(package, renderers=None):
         renderers  = []
     classes = get_ojota_children(package)
     app = Flask(__name__)
+    app.jinja_loader = FileSystemLoader(template_path)
     classes_map = {}
     for item in classes:
         classes_map[item[1].plural_name] = item
+
+    import os
 
     @app.route("/<name>")
     @app.route("/<name>/<pk>")
@@ -78,7 +86,7 @@ def run(package, renderers=None):
 
     @app.route('/')
     def index():
-        return render_template('tables.html', classes=classes_map.keys())
+        return render_template("tables.html", classes=classes_map.keys())
 
     app.debug = True
     app.run()
