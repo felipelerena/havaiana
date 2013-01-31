@@ -6,7 +6,7 @@
 Welcome to Havaiana's documentation!
 =================================
 
-Havaiana is a dynamic web interface for Ojota.
+Havaiana is a dynamic web interface for Ojota (http://ojota.rtfd.org).
 
 Havaiana is Free Software! you can check the code at http://bitbucket.org/felipelerena/havaiana
 
