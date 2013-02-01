@@ -43,7 +43,6 @@ def default_renderer(field, item, backwards=False):
         related = "/%s/%s" % (relation_data[0].plural_name, value)
         value = relation_data[0].get(value)
         field = relation_data[1]
-        field = field.replace("_", "  ").capitalize()
 
     if field == item.pk_field:
         field = "Primary Key (%s)" % field
