@@ -57,11 +57,40 @@
 </div>
 <div class="section" id="how-to-use-it">
 <h1>How to use it<a class="headerlink" href="#how-to-use-it" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="hello-world">
+<h2>Hello World<a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">ojota.examples.examples</span> <span class="kn">as</span> <span class="nn">pkg</span>
 <span class="kn">from</span> <span class="nn">havaiana</span> <span class="kn">import</span> <span class="n">run</span>
 
 <span class="n">run</span><span class="p">(</span><span class="n">pkg</span><span class="p">)</span>
 </pre></div>
+</div>
+</div>
+<div class="section" id="custom-rendering-for-a-field">
+<h2>Custom rendering for a field<a class="headerlink" href="#custom-rendering-for-a-field" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">food_data</span>
+
+<span class="kn">from</span> <span class="nn">havaiana</span> <span class="kn">import</span> <span class="n">run</span>
+
+<span class="k">def</span> <span class="nf">ingredients_list</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">backwards</span><span class="p">):</span>
+    <span class="n">required</span> <span class="o">=</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">required_fields</span>
+    <span class="n">ingredients</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">ingredients</span><span class="p">:</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="s">&#39;&lt;li&gt;&lt;a href=&quot;/Ingredients/</span><span class="si">%s</span><span class="s">&quot;&gt;</span><span class="si">%s</span><span class="s">&lt;/a&gt;&lt;/li&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">primary_key</span><span class="p">,</span>
+                                                    <span class="n">element</span><span class="p">)</span>
+        <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="s">&quot;&lt;ul&gt;</span><span class="si">%s</span><span class="s">&lt;/ul&gt;&quot;</span> <span class="o">%</span>  <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+    <span class="n">related</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">required</span><span class="p">,</span> <span class="n">related</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">renderers</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;Recipe&#39;</span><span class="p">,</span> <span class="s">&#39;ingredients&#39;</span><span class="p">,</span> <span class="n">ingredients_list</span><span class="p">)]</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">food_data</span><span class="p">,</span> <span class="s">&quot;My Food Database&quot;</span><span class="p">,</span> <span class="n">renderers</span><span class="p">)</span>
+
+    <span class="n">run</span><span class="p">(</span><span class="n">pkg</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="screenshots">
@@ -77,6 +106,10 @@
 <div class="figure align-center">
 <img alt="_images/3.png" src="_images/3.png" style="width: 800px;" />
 <p class="caption"><em>An item detail.</em></p>
+</div>
+<div class="figure align-center">
+<img alt="_images/4.png" src="_images/4.png" style="width: 800px;" />
+<p class="caption"><em>A view with custom rendering.</em></p>
 </div>
 </div>
 <div class="section" id="installation">
@@ -130,7 +163,11 @@ sudo python setup.py install
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Welcome to Havaiana&#8217;s documentation!</a></li>
-<li><a class="reference internal" href="#how-to-use-it">How to use it</a></li>
+<li><a class="reference internal" href="#how-to-use-it">How to use it</a><ul>
+<li><a class="reference internal" href="#hello-world">Hello World</a></li>
+<li><a class="reference internal" href="#custom-rendering-for-a-field">Custom rendering for a field</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#screenshots">Screenshots</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#table-of-contents">Table of contents</a><ul>

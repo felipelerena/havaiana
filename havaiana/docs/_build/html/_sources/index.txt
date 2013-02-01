@@ -12,12 +12,43 @@ Havaiana is Free Software! you can check the code at http://bitbucket.org/felipe
 
 How to use it
 =======================
+Hello World
+___________
+
 .. code-block:: python
    
    import ojota.examples.examples as pkg
    from havaiana import run
 
    run(pkg)
+
+Custom rendering for a field
+___________
+
+.. code-block:: python
+   
+    import food_data
+
+    from havaiana import run
+
+    def ingredients_list(field, item, backwards):
+        required = field in item.required_fields
+        ingredients = getattr(item, field)
+        items = []
+        for element in ingredients:
+            item = '<li><a href="/Ingredients/%s">%s</a></li>' % (element.primary_key,
+                                                        element)
+            items.append(item)
+        value = "<ul>%s</ul>" %  "".join(items)
+        related = False
+
+        return (field, value, required, related)
+    if __name__ == "__main__":
+        renderers = [('Recipe', 'ingredients', ingredients_list)]
+        run(food_data, "My Food Database", renderers)
+
+        run(pkg)
+
 
 Screenshots
 ===========
@@ -39,6 +70,12 @@ Screenshots
    :width: 800
 
    *An item detail.*
+
+.. figure:: screenshots/4.png
+   :align: center
+   :width: 800
+
+   *A view with custom rendering.*
 
 Installation
 ============

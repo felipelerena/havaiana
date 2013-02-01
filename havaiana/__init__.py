@@ -99,6 +99,14 @@ def run(package, title="Havaiana", renderers=None):
         filename = parts[-1]
         return send_file("templates/static/%s/%s" % (dir_name, filename))
 
+    @app.route('/absolute//<path:filename>')
+    def custom_absolute_static(filename):
+        parts = filename.split("/")
+        dir_name = "/".join(parts[:-1])
+        filename = parts[-1]
+        print "FILE", dir_name, filename
+        return send_file("/%s/%s" % (dir_name, filename))
+
     @app.route('/')
     def index():
         return render_template("tables.html", classes=classes_map.keys(),
