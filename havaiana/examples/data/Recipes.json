@@ -10,5 +10,12 @@
       "name": "Strawberry Ice cream",
       "instructions": "Use the blender!",
       "type_id": "2"
+    },
+    {
+      "pk": "3",
+      "name": "Mac and Cheese",
+      "instructions": "Does not exist outside US",
+      "type_id": "1"
     }
+
 ]

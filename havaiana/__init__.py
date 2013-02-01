@@ -43,6 +43,7 @@ def default_renderer(field, item, backwards=False):
         related = "/%s/%s" % (relation_data[0].plural_name, value)
         value = relation_data[0].get(value)
         field = relation_data[1]
+        field = field.replace("_", "  ").capitalize()
 
     if field == item.pk_field:
         field = "Primary Key (%s)" % field
@@ -87,7 +88,6 @@ def run(package, title="Havaiana", renderers=None):
             for field in item.fields:
                 attrs.append(render_field(field, item, class_renderers))
             for bw_rel in item.backwards_relations:
-                print "backwards"
                 attrs.append(render_field(bw_rel, item, class_renderers, True))
 
             return render_template('item.html', item=item, attrs=attrs,
