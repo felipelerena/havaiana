@@ -1,10 +1,12 @@
 import os
 
 from inspect import getmembers
-from ojota import Ojota
 
-from flask.helpers import url_for, send_file
-from flask import Flask, render_template
+import ojota.sources
+
+from ojota import Ojota, current_data_code
+from flask.helpers import send_file
+from flask import Flask, render_template, redirect
 
 from jinja2 import FileSystemLoader
 template_path = os.path.join(os.path.dirname(__file__), "templates")
@@ -59,7 +61,24 @@ def render_field(field, item, renderers, backwards=False):
 
     return render(field, item, backwards)
 
+def get_data_codes():
+    path = ojota.sources._DATA_SOURCE
+    dirs = [dir_ for dir_ in os.listdir(path)
+            if os.path.isdir(os.path.join(path, dir_))]
+    return ['Root'] + sorted(dirs)
+
+
 def run(package, title="Havaiana", renderers=None):
+    def default_data():
+        data = {}
+
+        data['title'] = title
+        data['data_code'] = Ojota.CURRENT_DATA_CODE
+        if data['data_code'] == "":
+            data['data_code'] = "Root"
+        data['data_codes'] = get_data_codes()
+        return data
+
     if renderers is None:
         renderers  = []
     classes = get_ojota_children(package)
@@ -70,16 +89,25 @@ def run(package, title="Havaiana", renderers=None):
     for item in classes:
         classes_map[item[1].plural_name] = item
 
+    @app.route('/change-data-code/<data_code>')
+    def change_data_code(data_code):
+        if data_code == 'Root':
+            data_code = ''
+        current_data_code(data_code)
+        return redirect('/')
+
     @app.route("/<name>")
     @app.route("/<name>/<pk>")
     def table(name, pk=None):
+        data_dict = default_data()
         item = classes_map[name]
         cls = item[1]
         class_renderers = [renderer[1:] for renderer in renderers
                            if renderer[0] == item[0]]
+        data_dict['class_name'] = name
         if pk is None:
-            return render_template('table.html', items=cls.all(),
-                                   class_name=name, title=title)
+            data_dict['items'] = cls.all()
+            template = 'table.html'
         else:
             params = {getattr(cls, "pk_field"): pk}
             item = cls.get(**params)
@@ -89,8 +117,10 @@ def run(package, title="Havaiana", renderers=None):
             for bw_rel in item.backwards_relations:
                 attrs.append(render_field(bw_rel, item, class_renderers, True))
 
-            return render_template('item.html', item=item, attrs=attrs,
-                                   class_name=name, title=title)
+            data_dict['item'] = item
+            data_dict['attrs'] = attrs
+            template = 'item.html'
+        return render_template(template, **data_dict)
 
     @app.route('/media/<path:filename>')
     def custom_static(filename):
@@ -104,13 +134,18 @@ def run(package, title="Havaiana", renderers=None):
         parts = filename.split("/")
         dir_name = "/".join(parts[:-1])
         filename = parts[-1]
-        print "FILE", dir_name, filename
         return send_file("/%s/%s" % (dir_name, filename))
 
     @app.route('/')
     def index():
-        return render_template("tables.html", classes=classes_map.keys(),
-                               title=title)
+        data_dict = default_data()
+
+        data_dict['classes'] = [[],  []]
+        for key, value in classes_map.items():
+            class_ = value[1]
+            index = 0 if class_.data_in_root else 1
+            data_dict['classes'][index].append(key)
+        return render_template("tables.html", **data_dict)
 
     app.debug = True
     app.run()

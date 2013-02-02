@@ -26,14 +26,17 @@
     },
     {
       "pk": "6",
-      "name": "Macarroni",
+      "name": "Chorizo",
       "recipe_id": "3"
     },
     {
       "pk": "7",
-      "name": "Cheese",
+      "name": "Bread",
+      "recipe_id": "3"
+    },
+    {
+      "pk": "8",
+      "name": "Chimichurri",
       "recipe_id": "3"
     }
-
-
 ]
