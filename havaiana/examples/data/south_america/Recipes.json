@@ -1,21 +1,20 @@
 [
     {
-      "pk": "1",
-      "name": "chicken with fries",
-      "instructions": "Fry the chicken, fry the fries",
-      "type_id": "1"
-    },
+        "pk": "1", 
+        "instructions": "Fry the chicken, fry the fries", 
+        "name": "chicken with fries", 
+        "type_id": "1"
+    }, 
     {
-      "pk": "2",
-      "name": "Strawberry Ice cream",
-      "instructions": "Use the blender!",
-      "type_id": "2"
-    },
+        "pk": "3", 
+        "instructions": "Just put the chorizo in the bread and add some chimichurri", 
+        "name": "Choripan", 
+        "type_id": "1"
+    }, 
     {
-      "pk": "3",
-      "name": "Choripan",
-      "instructions": "Just put the chorizo in the bread and add some chimichurri",
-      "type_id": "1"
+        "pk": "2", 
+        "instructions": "Use the blender!", 
+        "name": "Strawberry Ice cream", 
+        "type_id": "2"
     }
-
 ]

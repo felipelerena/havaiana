@@ -11,6 +11,7 @@ class RecipeType(Ojota):
 
 class Recipe(Ojota):
     plural_name = "Recipes"
+    required_fields = ("name", "instructions")
     recipe_type = Relation("type_id", RecipeType, "recipes")
     data_in_root = False
     def __repr__(self):
@@ -19,6 +20,7 @@ class Recipe(Ojota):
 
 class Ingredient(Ojota):
     plural_name = "Ingredients"
+    required_fields = ("name", )
     recipe = Relation("recipe_id", Recipe, "ingredients")
     data_in_root = False
 

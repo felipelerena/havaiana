@@ -59,6 +59,19 @@
     </div>
 
     <div class="container">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class=flashes>
+            {% for message in messages %}
+              <div class="alert alert-success">
+                <!--<a class="close">×</a>-->
+                {{ message }}
+              </div>     
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+      
       {% block content %}
 
       {% endblock %}
@@ -73,6 +86,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="/media/jquery.js"></script>
     <script src="/media/bootstrap/js/bootstrap-dropdown.js"></script>
+    <script src="/media/bootstrap/js/bootstrap-alert.js"></script>
   </body>
 </html>
 

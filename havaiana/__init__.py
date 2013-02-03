@@ -1,71 +1,15 @@
 import os
 
-from inspect import getmembers
-
-import ojota.sources
 
 from ojota import Ojota, current_data_code
 from flask.helpers import send_file
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, request, flash
+
+from helpers import get_ojota_children, get_data_codes, get_form
+from renderers import render_field
 
 from jinja2 import FileSystemLoader
 template_path = os.path.join(os.path.dirname(__file__), "templates")
-
-def get_ojota_children(package):
-    hijos = []
-    items = getmembers(package)
-    for item in items:
-        try:
-            if item[0] != "Ojota" and issubclass(item[1], Ojota):
-                hijos.append(item)
-        except TypeError:
-            pass
-    return hijos
-
-def default_renderer(field, item, backwards=False):
-    if item.required_fields is not None:
-        required = field in item.required_fields
-    else:
-        required = False
-    value = getattr(item, field)
-    relation_data = item.relations.get(field)
-
-    if backwards:
-        items = []
-        for element in value:
-            item_ = '<a href="/%s/%s">%s</a>' % (element.plural_name,
-                                                element.primary_key,
-                                                element)
-            items.append(item_)
-        value = ", ".join(items)
-        related = False
-    elif value is None or relation_data is None:
-        related = False
-    else:
-        related = "/%s/%s" % (relation_data[0].plural_name, value)
-        value = relation_data[0].get(value)
-        field = relation_data[1]
-
-    if field == item.pk_field:
-        field = "Primary Key (%s)" % field
-    else:
-        field = field.replace("_", "  ").capitalize()
-
-    return (field, value, required, related)
-
-def render_field(field, item, renderers, backwards=False):
-    render = default_renderer
-    for renderer in renderers:
-        if renderer[0] == field:
-            render = renderer[1]
-
-    return render(field, item, backwards)
-
-def get_data_codes():
-    path = ojota.sources._DATA_SOURCE
-    dirs = [dir_ for dir_ in os.listdir(path)
-            if os.path.isdir(os.path.join(path, dir_))]
-    return ['Root'] + sorted(dirs)
 
 
 def run(package, title="Havaiana", renderers=None):
@@ -96,6 +40,33 @@ def run(package, title="Havaiana", renderers=None):
         current_data_code(data_code)
         return redirect('/')
 
+    @app.route("/new/<name>", methods=['GET', 'POST'])
+    @app.route("/edit/<name>/<pk>", methods=['GET', 'POST'])
+    def new(name,pk=None):
+        data_dict = default_data()
+        item = classes_map[name]
+        cls = item[1]
+        update = False
+
+        if request.method == 'POST' or pk is None:
+            data = request.form
+        else:
+            update = True
+            data = cls.get(pk)
+
+        form = get_form(cls, data, update)
+        if request.method == 'POST' and form.validate():
+            element = cls(**form.data)
+            element.save()
+            flash('%s successfully saved' % cls.__name__)
+            redirect_url = "/%s/%s" % (name, element.primary_key)
+            return redirect(redirect_url)
+        data_dict['form'] = form
+        data_dict['update'] = update
+        data_dict['class_name'] = name
+        data_dict['class_single_name'] = cls.__name__
+        return render_template('form.html', **data_dict)
+
     @app.route("/<name>")
     @app.route("/<name>/<pk>")
     def table(name, pk=None):
@@ -118,6 +89,7 @@ def run(package, title="Havaiana", renderers=None):
                 attrs.append(render_field(bw_rel, item, class_renderers, True))
 
             data_dict['item'] = item
+            data_dict['pk'] = pk
             data_dict['attrs'] = attrs
             template = 'item.html'
         return render_template(template, **data_dict)
@@ -148,5 +120,6 @@ def run(package, title="Havaiana", renderers=None):
         return render_template("tables.html", **data_dict)
 
     app.debug = True
+    app.secret_key = "havaiana-is-awesome"
     app.run()
 

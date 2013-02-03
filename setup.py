@@ -10,7 +10,7 @@ except ImportError:
 
 setup(
     name='Havaiana',
-    version='0.1.3',
+    version='0.2.0',
     author='Felipe Lerena',
     author_email='felipelerena@gmail.com',
     packages=['havaiana'],
@@ -19,5 +19,5 @@ setup(
     license='LICENSE.txt',
     description='A GUI for Ojota',
     long_description=open('README.txt').read(),
-    install_requires=["ojota", "flask"],
+    install_requires=["ojota", "flask", "wtforms"],
 )
