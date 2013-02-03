@@ -75,6 +75,18 @@ Screenshots
    :align: center
    :width: 800
 
+   *Edit an existing element.*
+
+.. figure:: screenshots/5.png
+   :align: center
+   :width: 800
+   
+   *Create new element.*
+
+.. figure:: screenshots/6.png
+   :align: center
+   :width: 800
+
    *A view with custom rendering.*
 
 Installation
