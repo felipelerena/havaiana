@@ -23,7 +23,7 @@ ___________
    run(pkg)
 
 Custom rendering for a field
-___________
+____________________________
 
 .. code-block:: python
    
@@ -121,7 +121,7 @@ Dependencies
 =====================
  * flask
  * Ojota
-
+ * wtforms
 
 Indices and tables
 ==================
