@@ -41,18 +41,18 @@ def run(package, title="Havaiana", renderers=None):
         return redirect('/')
 
     @app.route("/new/<name>", methods=['GET', 'POST'])
-    @app.route("/edit/<name>/<pk>", methods=['GET', 'POST'])
-    def new(name,pk=None):
+    @app.route("/edit/<name>/<pk_>", methods=['GET', 'POST'])
+    def new(name, pk_=None):
         data_dict = default_data()
         item = classes_map[name]
         cls = item[1]
         update = False
 
-        if request.method == 'POST' or pk is None:
+        if request.method == 'POST' or pk_ is None:
             data = request.form
         else:
             update = True
-            data = cls.get(pk)
+            data = cls.get(pk_)
 
         form = get_form(cls, data, update)
         if request.method == 'POST' and form.validate():
@@ -67,20 +67,37 @@ def run(package, title="Havaiana", renderers=None):
         data_dict['class_single_name'] = cls.__name__
         return render_template('form.html', **data_dict)
 
+    @app.route("/delete/<name>/<pk_>", methods=['GET', 'POST'])
+    def delete(name, pk_=None):
+        item = classes_map[name]
+        cls = item[1]
+        element = cls.get(pk_)
+        if request.method == 'GET':
+            data_dict = default_data()
+            data_dict['element'] = element
+            data_dict['class_name'] = name
+            data_dict['pk'] = pk_
+            return render_template("confirm_delete.html", **data_dict)
+        else:
+            flash('%s successfully deleted' % element)
+            element.delete()
+            redirect_url = "/%s" % name
+            return redirect(redirect_url)
+
     @app.route("/<name>")
-    @app.route("/<name>/<pk>")
-    def table(name, pk=None):
+    @app.route("/<name>/<pk_>")
+    def table(name, pk_=None):
         data_dict = default_data()
         item = classes_map[name]
         cls = item[1]
         class_renderers = [renderer[1:] for renderer in renderers
                            if renderer[0] == item[0]]
         data_dict['class_name'] = name
-        if pk is None:
+        if pk_ is None:
             data_dict['items'] = cls.all()
             template = 'table.html'
         else:
-            params = {getattr(cls, "pk_field"): pk}
+            params = {getattr(cls, "pk_field"): pk_}
             item = cls.get(**params)
             attrs = []
             for field in item.fields:
@@ -89,7 +106,7 @@ def run(package, title="Havaiana", renderers=None):
                 attrs.append(render_field(bw_rel, item, class_renderers, True))
 
             data_dict['item'] = item
-            data_dict['pk'] = pk
+            data_dict['pk'] = pk_
             data_dict['attrs'] = attrs
             template = 'item.html'
         return render_template(template, **data_dict)
