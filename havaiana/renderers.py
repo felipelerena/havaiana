@@ -35,4 +35,8 @@ def render_field(field, item, renderers, backwards=False):
         if renderer[0] == field:
             render = renderer[1]
 
-    return render(field, item, backwards)
+    try:
+        rendered_field = render(field, item, backwards)
+    except AttributeError:
+        rendered_field = (field, "", False, False)
+    return rendered_field

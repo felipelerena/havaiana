@@ -88,7 +88,12 @@ def run(package, title="Havaiana", renderers=None):
     @app.route("/<name>/<pk_>")
     def table(name, pk_=None):
         data_dict = default_data()
-        item = classes_map[name]
+        try:
+            item = classes_map[name]
+        except KeyError:
+            data_dict['message'] = "The class <strong>%s</strong> does not exist"  % name
+            return render_template("404.html", **data_dict), 404
+
         cls = item[1]
         class_renderers = [renderer[1:] for renderer in renderers
                            if renderer[0] == item[0]]
@@ -99,6 +104,9 @@ def run(package, title="Havaiana", renderers=None):
         else:
             params = {getattr(cls, "pk_field"): pk_}
             item = cls.get(**params)
+            if item is None:
+                data_dict['message'] = "The item with id <strong>%s</strong> does not exist for class %s"  % (pk_, name)
+                return render_template("404.html", **data_dict), 404
             attrs = []
             for field in item.fields:
                 attrs.append(render_field(field, item, class_renderers))
@@ -135,6 +143,13 @@ def run(package, title="Havaiana", renderers=None):
             index = 0 if class_.data_in_root else 1
             data_dict['classes'][index].append(key)
         return render_template("tables.html", **data_dict)
+
+    @app.errorhandler(404)
+    def page_not_found(e):
+        data_dict = default_data()
+        data_dict['message'] = "Ugly <strong>404</strong> is Ugly"
+        return render_template('404.html', **data_dict), 404
+
 
     app.debug = True
     app.secret_key = "havaiana-is-awesome"
