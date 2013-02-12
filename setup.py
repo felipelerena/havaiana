@@ -10,7 +10,7 @@ except ImportError:
 
 setup(
     name='Havaiana',
-    version='0.4.0',
+    version='1.0.0',
     author='Felipe Lerena',
     author_email='felipelerena@gmail.com',
     packages=['havaiana'],
