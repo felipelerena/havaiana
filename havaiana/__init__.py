@@ -22,6 +22,8 @@ class Site(object):
         self.title = title
         self.template_path = os.path.join(os.path.dirname(__file__),
                                           "templates")
+        self.editable = True
+        self.deletable = True
 
     def _default_data(self):
         data = {}
@@ -31,6 +33,8 @@ class Site(object):
         if data['data_code'] == "":
             data['data_code'] = "Root"
         data['data_codes'] = get_data_codes()
+        data['editable'] = self.editable
+        data['deletable'] = self.deletable
         return data
 
     def _create_app(self):
@@ -59,45 +63,54 @@ class Site(object):
         @self.app.route("/edit/<name>/<pk_>", methods=['GET', 'POST'])
         def new(name, pk_=None):
             data_dict = self._default_data()
-            item = self.classes_map[name]
-            cls = item[1]
-            update = False
-
-            if request.method == 'POST' or pk_ is None:
-                data = request.form
+            if pk_ and not self.editable:
+                data_dict['message'] = "Edition is not supported"
+                return render_template("404.html", **data_dict), 403
             else:
-                update = True
-                data = cls.get(pk_)
+                item = self.classes_map[name]
+                cls = item[1]
+                update = False
 
-            form = get_form(cls, data, update)
-            if request.method == 'POST' and form.validate():
-                element = cls(**form.data)
-                element.save()
-                flash('%s successfully saved' % cls.__name__)
-                redirect_url = "/%s/%s" % (name, element.primary_key)
-                return redirect(redirect_url)
-            data_dict['form'] = form
-            data_dict['update'] = update
-            data_dict['class_name'] = name
-            data_dict['class_single_name'] = cls.__name__
-            return render_template('form.html', **data_dict)
+                if request.method == 'POST' or pk_ is None:
+                    data = request.form
+                else:
+                    update = True
+                    data = cls.get(pk_)
+
+                form = get_form(cls, data, update)
+                if request.method == 'POST' and form.validate():
+                    element = cls(**form.data)
+                    element.save()
+                    flash('%s successfully saved' % cls.__name__)
+                    redirect_url = "/%s/%s" % (name, element.primary_key)
+                    return redirect(redirect_url)
+                data_dict['form'] = form
+                data_dict['update'] = update
+                data_dict['class_name'] = name
+                data_dict['class_single_name'] = cls.__name__
+                return render_template('form.html', **data_dict)
 
         @self.app.route("/delete/<name>/<pk_>", methods=['GET', 'POST'])
         def delete(name, pk_=None):
-            item = self.classes_map[name]
-            cls = item[1]
-            element = cls.get(pk_)
-            if request.method == 'GET':
-                data_dict = self._default_data()
-                data_dict['element'] = element
-                data_dict['class_name'] = name
-                data_dict['pk'] = pk_
-                return render_template("confirm_delete.html", **data_dict)
+            if self.deletable:
+                item = self.classes_map[name]
+                cls = item[1]
+                element = cls.get(pk_)
+                if request.method == 'GET':
+                    data_dict = self._default_data()
+                    data_dict['element'] = element
+                    data_dict['class_name'] = name
+                    data_dict['pk'] = pk_
+                    return render_template("confirm_delete.html", **data_dict)
+                else:
+                    flash('%s successfully deleted' % element)
+                    element.delete()
+                    redirect_url = "/%s" % name
+                    return redirect(redirect_url)
             else:
-                flash('%s successfully deleted' % element)
-                element.delete()
-                redirect_url = "/%s" % name
-                return redirect(redirect_url)
+                data_dict = self._default_data()
+                data_dict['message'] = "Deletion is not supported"
+                return render_template("404.html", **data_dict), 403
 
         @self.app.route("/<name>")
         @self.app.route("/<name>/<pk_>")

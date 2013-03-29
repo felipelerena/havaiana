@@ -7,9 +7,11 @@
     </div>
 
     <div class="span3">
+      {% if editable %}
       <a class="btn pull-right" href="/new/{{class_name}}">
         <i class="icon-plus-sign"></i>New Item
       </a>
+      {% endif %}
     </div>
   </div>
   {% for item in items%}

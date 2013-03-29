@@ -7,12 +7,16 @@
       </div>
 
       <div class="span3">
-        <a class="btn pull-right" href="/delete/{{class_name}}/{{pk}}">
-          <i class="icon-remove"></i>Delete
-        </a>
-        <a class="btn pull-right" href="/edit/{{class_name}}/{{pk}}">
-          <i class="icon-edit"></i>Edit
-        </a>
+        {% if deletable %}
+          <a class="btn pull-right" href="/delete/{{class_name}}/{{pk}}">
+            <i class="icon-remove"></i>Delete
+          </a>
+        {% endif %}
+        {% if editable %}
+          <a class="btn pull-right" href="/edit/{{class_name}}/{{pk}}">
+            <i class="icon-edit"></i>Edit
+          </a>
+        {% endif %}
       </div>
     </div>
     <table class="table table-bordered table-striped">
