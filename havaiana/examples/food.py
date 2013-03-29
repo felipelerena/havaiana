@@ -1,6 +1,6 @@
 import food_data
 
-from havaiana import run
+from havaiana import Site
 
 def ingredients_list(field, item, backwards):
     required = field in item.required_fields
@@ -14,6 +14,12 @@ def ingredients_list(field, item, backwards):
     related = False
 
     return (field, value, required, related)
+
 if __name__ == "__main__":
     renderers = [('Recipe', 'ingredients', ingredients_list)]
-    run(food_data, "My Food Database", renderers)
+
+    site = Site(food_data, "My Food Database", renderers)
+    site.serve()
+
+
+
