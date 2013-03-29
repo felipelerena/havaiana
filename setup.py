@@ -10,14 +10,14 @@ except ImportError:
 
 setup(
     name='Havaiana',
-    version='1.0.0',
+    version='2.0.0',
     author='Felipe Lerena',
     author_email='felipelerena@gmail.com',
     packages=['havaiana'],
     scripts=[],
     url='http://pypi.python.org/pypi/Havaiana/',
     license='LICENSE.txt',
-    description='A GUI for Ojota',
+    description='A GUI for Ojota - Alows to edit, create and remove elements',
     long_description=open('README.txt').read(),
     install_requires=["ojota", "flask", "wtforms"],
 )

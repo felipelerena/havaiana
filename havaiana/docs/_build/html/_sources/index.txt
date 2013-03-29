@@ -18,9 +18,10 @@ ___________
 .. code-block:: python
    
    import ojota.examples.examples as pkg
-   from havaiana import run
+   from havaiana import Site
 
-   run(pkg)
+   site = Site(pkg)
+   site.serve()
 
 Custom rendering for a field
 ____________________________
@@ -29,7 +30,7 @@ ____________________________
    
     import food_data
 
-    from havaiana import run
+    from havaiana import Serve
 
     def ingredients_list(field, item, backwards):
         required = field in item.required_fields
@@ -45,9 +46,9 @@ ____________________________
         return (field, value, required, related)
     if __name__ == "__main__":
         renderers = [('Recipe', 'ingredients', ingredients_list)]
-        run(food_data, "My Food Database", renderers)
+        site = Site(food_data, "My Food Database", renderers)
 
-        run(pkg)
+        site.serve()
 
 
 Screenshots

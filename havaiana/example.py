@@ -15,10 +15,11 @@ This file is part of Ojota.
     along with Ojota.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from __init__ import run
+from __init__ import Site
 from ojota import set_data_source
 
 import ojota.examples.examples as pkg
 
 if __name__ == '__main__':
-    run(pkg)
+    site = Site(pkg)
+    site.serve()
