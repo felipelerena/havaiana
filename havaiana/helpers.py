@@ -28,6 +28,8 @@ def get_form(cls, form_data, update=False):
     class HavaianaForm(Form):
         pass
     fields = [cls.pk_field]
+    if hasattr(form_data, "fields"):
+        fields += form_data.fields
     if cls.required_fields is not None:
         fields = set(fields + list(cls.required_fields))
     for field in fields:
