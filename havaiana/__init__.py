@@ -24,6 +24,7 @@ class Site(object):
                                           "templates")
         self.editable = True
         self.deletable = True
+        self.sortable = True
 
         self._create_app()
 
@@ -37,6 +38,7 @@ class Site(object):
         data['data_codes'] = get_data_codes()
         data['editable'] = self.editable
         data['deletable'] = self.deletable
+        data['sortable'] = self.sortable
         return data
 
     def _create_app(self):
@@ -149,7 +151,20 @@ class Site(object):
                             if renderer[0] == item[0]]
         data_dict['class_name'] = name
         if pk_ is None:
-            data_dict['items'] = cls.all()
+            if self.sortable:
+                order = request.values.get('order')
+            else:
+                order = None
+
+            data_dict['items'] = cls.all(sorted=order)
+
+            if self.sortable:
+                fields = []
+                for element in data_dict['items']:
+                    fields.extend(element.fields)
+                fields = set(fields)
+                data_dict['order_fields'] = fields
+
             template = 'table.html'
         else:
             params = {getattr(cls, "pk_field"): pk_}
