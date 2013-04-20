@@ -30,7 +30,7 @@ ____________________________
    
     import food_data
 
-    from havaiana import Serve
+    from havaiana import Site
 
     def ingredients_list(field, item, backwards):
         required = field in item.required_fields
@@ -48,6 +48,38 @@ ____________________________
         renderers = [('Recipe', 'ingredients', ingredients_list)]
         site = Site(food_data, "My Food Database", renderers)
 
+        site.serve()
+
+Adding a chart on a view
+____________________________
+
+.. code-block:: python
+      
+    import food_data
+
+    from havaiana import Site
+    from havaiana.charts import LineChart
+
+    class RainChartView(LineChart):
+        def __init__(self):
+        LineChart.__init__(self, "Recipes uploaded to the site",
+                            "uploads", 800, 400)
+
+        def get_data(self, data):
+            keys = []
+            points = []
+            for element in data:
+                keys.append(element.date)
+                points.append({"value": int(element.number),
+                            "xlink": "/Recipes uploaded by day/%s" % element.date})
+            return keys, points
+
+    if __name__ == "__main__":
+        renderers = [
+            ('RecipesByDay', "__index_chart", RainChartView)
+        ]
+
+        site = Site(food_data, "My Food Database", renderers)
         site.serve()
 
 
