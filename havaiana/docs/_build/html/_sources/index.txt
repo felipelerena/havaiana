@@ -62,8 +62,8 @@ ____________________________
 
     class RainChartView(LineChart):
         def __init__(self):
-        LineChart.__init__(self, "Recipes uploaded to the site",
-                            "uploads", 800, 400)
+            LineChart.__init__(self, "Recipes uploaded to the site",
+                               "uploads", 800, 400)
 
         def get_data(self, data):
             keys = []
@@ -71,7 +71,7 @@ ____________________________
             for element in data:
                 keys.append(element.date)
                 points.append({"value": int(element.number),
-                            "xlink": "/Recipes uploaded by day/%s" % element.date})
+                               "xlink": "/Recipes uploaded by day/%s" % element.date})
             return keys, points
 
     if __name__ == "__main__":
