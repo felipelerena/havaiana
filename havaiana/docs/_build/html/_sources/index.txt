@@ -90,7 +90,19 @@ Screenshots
 
    *A view with custom rendering.*
 
-Installation
+.. figure:: screenshots/7.png
+   :align: center
+   :width: 755
+
+   *You can sort the data.*
+
+.. figure:: screenshots/8.png
+   :align: center
+   :width: 872
+
+   *Render charts with your data*
+
+   Installation
 ============
 With easy_install
 
@@ -123,6 +135,7 @@ Dependencies
  * flask
  * Ojota
  * wtforms
+ * pygal
 
 Indices and tables
 ==================
