@@ -29,6 +29,11 @@
     </div>
 
   </div>
+  {% if index_chart %}
+    <div>
+      {{index_chart|safe}}
+    </div>
+  {% endif %}
   {% for item in items%} 
       <a href="/{{class_name}}/{{item.primary_key}}">{{item}}</a><br>
   {% endfor %}

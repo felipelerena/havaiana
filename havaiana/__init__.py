@@ -62,10 +62,10 @@ class Site(object):
     def serve(self):
         self._create_map()
 
-        self.app.add_url_rule('/change-data-code/<data_code>', 'change_data_code',
-                          self.change_data_code)
+        self.app.add_url_rule('/change-data-code/<data_code>',
+            'change_data_code', self.change_data_code)
         self.app.add_url_rule("/new/<name>", "new", self.new,
-                          methods=['GET', 'POST'])
+                              methods=['GET', 'POST'])
         self.app.add_url_rule("/edit/<name>/<pk_>", "new", self.new,
                               methods=['GET', 'POST'])
         self.app.add_url_rule("/delete/<name>/<pk_>", "delete", self.delete,
@@ -75,8 +75,7 @@ class Site(object):
         self.app.add_url_rule('/media/<path:filename>', "custom_static",
                               self.custom_static)
         self.app.add_url_rule('/absolute//<path:filename>',
-                              "custom_absolute_static",
-                              self.custom_absolute_static)
+            "custom_absolute_static", self.custom_absolute_static)
         self.app.add_url_rule('/', "index", self.index)
 
         @self.app.errorhandler(404)
@@ -163,6 +162,10 @@ class Site(object):
                 order = None
 
             data_dict['items'] = cls.all(sorted=order)
+            if cls.__name__ in self.renderers and \
+                "__index_chart" in self.renderers[cls.__name__]:
+                chart = self.renderers[cls.__name__]["__index_chart"]()
+                data_dict["index_chart"] = chart.render(data_dict["items"])
 
             if self.sortable:
                 fields = []
@@ -173,7 +176,6 @@ class Site(object):
 
             template = 'table.html'
         else:
-
             class_renderers = self.renderers[item[0]].items() \
                 if item[0] in self.renderers else []
 

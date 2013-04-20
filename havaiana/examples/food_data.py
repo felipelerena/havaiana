@@ -26,3 +26,13 @@ class Ingredient(Ojota):
 
     def __repr__(self):
         return self.name
+
+
+class RecipesByDay(Ojota):
+    plural_name = "Recipes uploaded by day"
+    pk_field = "date"
+    required_fields = ("number", )
+    default_order = "date"
+
+    def __repr__(self):
+        return self.date
