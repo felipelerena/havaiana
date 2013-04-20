@@ -14,11 +14,13 @@ from jinja2 import FileSystemLoader
 class Site(object):
     def __init__(self, package, title="Havaiana",
                  renderers=None):
-        if renderers is None:
-            renderers  = []
-
-        self.renderers = renderers
         self.package = package
+
+        self.renderers = {}
+        if renderers is not None:
+            for renderer in renderers:
+                self.add_renderer(*renderer)
+
         self.title = title
         self.template_path = os.path.join(os.path.dirname(__file__),
                                           "templates")
@@ -27,6 +29,11 @@ class Site(object):
         self.sortable = True
 
         self._create_app()
+
+    def add_renderer(self, class_name, field, callback):
+        if class_name not in self.renderers:
+            self.renderers[class_name] = {}
+        self.renderers[class_name][field] = callback
 
     def _default_data(self):
         data = {}
@@ -82,7 +89,7 @@ class Site(object):
         self.app.secret_key = "havaiana-is-awesome"
         self.app.run(host="0.0.0.0")
 
-    def change_data_code(data_code):
+    def change_data_code(self, data_code):
         if data_code == 'Root':
             data_code = ''
         current_data_code(data_code)
@@ -147,9 +154,8 @@ class Site(object):
             return render_template("404.html", **data_dict), 404
 
         cls = item[1]
-        class_renderers = [renderer[1:] for renderer in self.renderers
-                            if renderer[0] == item[0]]
         data_dict['class_name'] = name
+
         if pk_ is None:
             if self.sortable:
                 order = request.values.get('order')
@@ -167,11 +173,16 @@ class Site(object):
 
             template = 'table.html'
         else:
+
+            class_renderers = self.renderers[item[0]].items() \
+                if item[0] in self.renderers else []
+
             params = {getattr(cls, "pk_field"): pk_}
             item = cls.get(**params)
             if item is None:
                 data_dict['message'] = "The item with id <strong>%s</strong> does not exist for class %s"  % (pk_, name)
                 return render_template("404.html", **data_dict), 404
+
             attrs = []
             for field in item.fields:
                 attrs.append(render_field(field, item, class_renderers))
@@ -206,7 +217,3 @@ class Site(object):
             index = 0 if class_.data_in_root else 1
             data_dict['classes'][index].append(key)
         return render_template("tables.html", **data_dict)
-
-
-
-
