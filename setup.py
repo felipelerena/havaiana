@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import glob
 
 try:
     from setuptools import setup, find_packages
@@ -10,10 +11,14 @@ except ImportError:
 
 setup(
     name='Havaiana',
-    version='2.3.0',
+    version='2.3.1',
     author='Felipe Lerena',
     author_email='felipelerena@gmail.com',
     packages=['havaiana'],
+    include_package_data=True,
+    package_data={
+        'havaiana/templates': ['*'],
+    },
     scripts=[],
     url='http://pypi.python.org/pypi/Havaiana/',
     license='LICENSE.txt',
