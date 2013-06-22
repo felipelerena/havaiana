@@ -182,7 +182,7 @@ class Site(object):
             for item in page_items:
                 grid_item = [(repr(item), item.primary_key)]
                 for field in fields:
-                    grid_item.append(getattr(item, field, ""))
+                    grid_item.append(render_field(field,item, self.renderers))
                 grid_items.append(grid_item)
             data_dict['items'] = grid_items
 

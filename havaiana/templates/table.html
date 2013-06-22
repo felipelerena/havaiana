@@ -53,7 +53,11 @@
                       {% if loop.index == 1 %}
                         <a href="/{{class_name}}/{{col.1}}">{{col.0}}</a>
                       {% else %}
-                        {{col}}
+                        {% if col.3 %}
+                            <a href="{{ col.3 }}">{{ col.1 }}</a>
+                        {% else %}
+                            {{ col.1|safe }}
+                        {% endif %}
                       {% endif %}
                     </td>
                 {% endfor %}
