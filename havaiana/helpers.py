@@ -1,10 +1,11 @@
 import os
 
 from inspect import getmembers
-from ojota import Ojota
 from wtforms import Form, TextField, SelectField
 
 import ojota.sources
+
+from ojota import Ojota
 
 
 def get_ojota_children(package):

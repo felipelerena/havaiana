@@ -1,14 +1,14 @@
 import os
 
+from jinja2 import FileSystemLoader
 
 from ojota import Ojota, current_data_code
 from flask.helpers import send_file
 from flask import Flask, render_template, redirect, request, flash
+from flask.ext.paginate import Pagination
 
 from helpers import get_ojota_children, get_data_codes, get_form
 from renderers import render_field
-
-from jinja2 import FileSystemLoader
 
 
 class Site(object):
@@ -43,9 +43,11 @@ class Site(object):
         if data['data_code'] == "":
             data['data_code'] = "Root"
         data['data_codes'] = get_data_codes()
+
         data['editable'] = self.editable
         data['deletable'] = self.deletable
         data['sortable'] = self.sortable
+
         return data
 
     def _create_app(self):
@@ -145,13 +147,13 @@ class Site(object):
             return render_template("404.html", **data_dict), 403
 
     def table(self, name, pk_=None):
+        items_per_page = 50
         data_dict = self._default_data()
         try:
             item = self.classes_map[name]
         except KeyError:
             data_dict['message'] = "The class <strong>%s</strong> does not exist"  % name
             return render_template("404.html", **data_dict), 404
-
 
         cls = item[1]
         data_dict['class_name'] = name
@@ -165,18 +167,34 @@ class Site(object):
             if order is None and cls.default_order is not None:
                 order = cls.default_order
 
-            data_dict['items'] = cls.all(sorted=order)
+            page = int(request.args.get("page",  1))
+            items = cls.all(sorted=order)
+
+            fields = []
+            for element in items:
+                fields.extend(element.fields)
+            fields = set(fields)
+
+            data_dict['fields'] = fields
+
+            page_items = items[(page-1)*items_per_page:page*items_per_page]
+            grid_items = []
+            for item in page_items:
+                grid_item = [(repr(item), item.primary_key)]
+                for field in fields:
+                    grid_item.append(getattr(item, field, ""))
+                grid_items.append(grid_item)
+            data_dict['items'] = grid_items
+
+            pagination = Pagination(total=len(items), page=page,
+                search=False, record_name=cls.plural_name,
+                per_page=items_per_page, alignment="centered")
+            data_dict['pagination'] = pagination
+
             if cls.__name__ in self.renderers and \
                 "__index_chart" in self.renderers[cls.__name__]:
                 chart = self.renderers[cls.__name__]["__index_chart"]()
-                data_dict["index_chart"] = chart.render(data_dict["items"])
-
-            if self.sortable:
-                fields = []
-                for element in data_dict['items']:
-                    fields.extend(element.fields)
-                fields = set(fields)
-                data_dict['order_fields'] = fields
+                data_dict["index_chart"] = chart.render(items)
 
             template = 'table.html'
         else:

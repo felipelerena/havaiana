@@ -11,7 +11,7 @@
         <a href="#" class="btn"><i class="icon-filter"></i>Order</a>
         <a href="#" data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></a>
         <ul class="dropdown-menu">
-          {% for field in order_fields %}
+          {% for field in fields %}
             <li>
               <a href="?order={{field}}">{{field}}</a>
             </li>
@@ -34,9 +34,34 @@
       {{index_chart|safe}}
     </div>
   {% endif %}
-  {% for item in items%} 
-      <a href="/{{class_name}}/{{item.primary_key}}">{{item}}</a><br>
-  {% endfor %}
+  {{ pagination.info|safe }}
+  {{ pagination.links|safe }}
+  <table class="table table-bordered table-striped table-hover">
+    <thead>
+      <tr>
+          <td></td>
+          {% for field in fields%} 
+              <th>{{field}}</th>
+          {% endfor %}
+      </tr>
+    <thead>
+    <tbody>
+        {% for item in items %} 
+            <tr>
+                {% for col in item %} 
+                    <td>
+                      {% if loop.index == 1 %}
+                        <a href="/{{class_name}}/{{col.1}}">{{col.0}}</a>
+                      {% else %}
+                        {{col}}
+                      {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+  {{ pagination.links|safe }}
     <ul class="pager">
       <li class="previous">
         <a href="..">← Back</a>
