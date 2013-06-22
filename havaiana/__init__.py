@@ -7,23 +7,26 @@ from flask.helpers import send_file
 from flask import Flask, render_template, redirect, request, flash
 from flask.ext.paginate import Pagination
 
+from config import ITEMS_PER_PAGE, SECRET_KEY
 from helpers import get_ojota_children, get_data_codes, get_form
 from renderers import render_field
 
 
+
+
 class Site(object):
-    def __init__(self, package, title="Havaiana",
+    def __init__(self, package, title="Havaiana Powered Site",
                  renderers=None):
         self.package = package
+        self.title = title
 
+        #adding renderers
         self.renderers = {}
         if renderers is not None:
             for renderer in renderers:
                 self.add_renderer(*renderer)
 
-        self.title = title
-        self.template_path = os.path.join(os.path.dirname(__file__),
-                                          "templates")
+        #settings
         self.editable = True
         self.deletable = True
         self.sortable = True
@@ -53,6 +56,9 @@ class Site(object):
     def _create_app(self):
         self.classes = get_ojota_children(self.package)
         self.app = Flask(__name__)
+        # template related stuff
+        self.template_path = os.path.join(os.path.dirname(__file__),
+                                          "templates")
         self.app.jinja_loader = FileSystemLoader(self.template_path)
 
     def _create_map(self):
@@ -61,9 +67,7 @@ class Site(object):
         for item in self.classes:
            self.classes_map[item[1].plural_name] = item
 
-    def serve(self):
-        self._create_map()
-
+    def _map_urls(self):
         self.app.add_url_rule('/change-data-code/<data_code>',
             'change_data_code', self.change_data_code)
         self.app.add_url_rule("/new/<name>", "new", self.new,
@@ -86,8 +90,12 @@ class Site(object):
             data_dict['message'] = "Ugly <strong>404</strong> is Ugly"
             return render_template('404.html', **data_dict), 404
 
+    def serve(self):
+        self._create_map()
+        self._map_urls()
+
         self.app.debug = True
-        self.app.secret_key = "havaiana-is-awesome"
+        self.app.secret_key = SECRET_KEY
         self.app.run(host="0.0.0.0")
 
     def change_data_code(self, data_code):
@@ -98,6 +106,7 @@ class Site(object):
 
     def new(self, name, pk_=None):
         data_dict = self._default_data()
+        # error handling
         if pk_ and not self.editable:
             data_dict['message'] = "Edition is not supported"
             return render_template("404.html", **data_dict), 403
@@ -113,12 +122,15 @@ class Site(object):
                 data = cls.get(pk_)
 
             form = get_form(cls, data, update)
+            # validate and save if there is data in to save.
             if request.method == 'POST' and form.validate():
                 element = cls(**form.data)
                 element.save()
                 flash('%s successfully saved' % cls.__name__)
                 redirect_url = "/%s/%s" % (name, element.primary_key)
                 return redirect(redirect_url)
+
+            #adding dict data
             data_dict['form'] = form
             data_dict['update'] = update
             data_dict['class_name'] = name
@@ -130,6 +142,8 @@ class Site(object):
             item = self.classes_map[name]
             cls = item[1]
             element = cls.get(pk_)
+            # show confirmation data.
+
             if request.method == 'GET':
                 data_dict = self._default_data()
                 data_dict['element'] = element
@@ -147,8 +161,8 @@ class Site(object):
             return render_template("404.html", **data_dict), 403
 
     def table(self, name, pk_=None):
-        items_per_page = 50
         data_dict = self._default_data()
+        # manage key error.
         try:
             item = self.classes_map[name]
         except KeyError:
@@ -159,6 +173,10 @@ class Site(object):
         data_dict['class_name'] = name
 
         if pk_ is None:
+            # getting current page number.
+            page = int(request.args.get("page",  1))
+
+            #sort related stuff
             if self.sortable:
                 order = request.values.get('order')
             else:
@@ -167,30 +185,37 @@ class Site(object):
             if order is None and cls.default_order is not None:
                 order = cls.default_order
 
-            page = int(request.args.get("page",  1))
             items = cls.all(sorted=order)
 
+            # getting the fields for all the items.
             fields = []
             for element in items:
                 fields.extend(element.fields)
             fields = set(fields)
-
             data_dict['fields'] = fields
 
-            page_items = items[(page-1)*items_per_page:page*items_per_page]
+            # fiter only the items that will be shown in this page.
+            first_item = (page - 1) * ITEMS_PER_PAGE
+            last_item = first_item + ITEMS_PER_PAGE
+            page_items = items[first_item:last_item]
+
+            # prepairing the items to show them in the grid.
             grid_items = []
             for item in page_items:
                 grid_item = [(repr(item), item.primary_key)]
                 for field in fields:
+                    # here is where I render the widgets.
                     grid_item.append(render_field(field,item, self.renderers))
                 grid_items.append(grid_item)
             data_dict['items'] = grid_items
 
+            #pagination handling
             pagination = Pagination(total=len(items), page=page,
                 search=False, record_name=cls.plural_name,
-                per_page=items_per_page, alignment="centered")
+                per_page=ITEMS_PER_PAGE, alignment="centered")
             data_dict['pagination'] = pagination
 
+            # render the chart if it's configured
             if cls.__name__ in self.renderers and \
                 "__index_chart" in self.renderers[cls.__name__]:
                 chart = self.renderers[cls.__name__]["__index_chart"]()
@@ -198,6 +223,7 @@ class Site(object):
 
             template = 'table.html'
         else:
+            #getting the renderers for the class
             class_renderers = self.renderers[item[0]].items() \
                 if item[0] in self.renderers else []
 
@@ -207,6 +233,7 @@ class Site(object):
                 data_dict['message'] = "The item with id <strong>%s</strong> does not exist for class %s"  % (pk_, name)
                 return render_template("404.html", **data_dict), 404
 
+            # rendering the fields for the class.
             attrs = []
             for field in item.fields:
                 attrs.append(render_field(field, item, class_renderers))
