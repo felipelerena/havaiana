@@ -152,6 +152,7 @@ class Site(object):
             data_dict['message'] = "The class <strong>%s</strong> does not exist"  % name
             return render_template("404.html", **data_dict), 404
 
+
         cls = item[1]
         data_dict['class_name'] = name
 
@@ -160,6 +161,9 @@ class Site(object):
                 order = request.values.get('order')
             else:
                 order = None
+
+            if order is None and cls.default_order is not None:
+                order = cls.default_order
 
             data_dict['items'] = cls.all(sorted=order)
             if cls.__name__ in self.renderers and \
