@@ -41,15 +41,17 @@
           <a class="brand" href="/">{{title}}</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="dropdown">
-              <a data-toggle="dropdown" class="dropdown-toggle"
-                href="#">({{data_code}})<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                    {% for code in data_codes %}
-                    <li><a href="/change-data-code/{{code}}">{{code}}</a></li>
-                    {% endfor %}
-                </ul>
-              </li>
+              {% if data_codes|length > 1 %}
+                <li class="dropdown">
+                <a data-toggle="dropdown" class="dropdown-toggle"
+                  href="#">({{data_code}})<b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                      {% for code in data_codes %}
+                      <li><a href="/change-data-code/{{code}}">{{code}}</a></li>
+                      {% endfor %}
+                  </ul>
+                </li>
+              {% endif %}
               <li><a href="http://havaiana.rtfd.org" target="_blank">Havaiana docs</a></li>
               <li><a href="http://ojota.rtfd.org" target="_blank">Ojota docs</a></li>
             </ul>
