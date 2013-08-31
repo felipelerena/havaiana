@@ -202,10 +202,10 @@ class Site(object):
             # prepairing the items to show them in the grid.
             grid_items = []
             for item in page_items:
-                grid_item = [(repr(item), item.primary_key)]
+                grid_item = [(item, item.primary_key)]
                 for field in fields:
                     # here is where I render the widgets.
-                    grid_item.append(render_field(field,item, self.renderers))
+                    grid_item.append(render_field(field, item, self.renderers))
                 grid_items.append(grid_item)
             data_dict['items'] = grid_items
 
