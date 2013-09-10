@@ -205,7 +205,9 @@ class Site(object):
                 grid_item = [(item, item.primary_key)]
                 for field in fields:
                     # here is where I render the widgets.
-                    grid_item.append(render_field(field, item, self.renderers))
+                    class_renderers = self.renderers[item.__class__.__name__].items() \
+                        if item.__class__.__name__ in self.renderers else []
+                    grid_item.append(render_field(field, item, class_renderers))
                 grid_items.append(grid_item)
             data_dict['items'] = grid_items
 
