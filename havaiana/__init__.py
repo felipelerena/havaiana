@@ -12,8 +12,6 @@ from helpers import get_ojota_children, get_data_codes, get_form
 from renderers import render_field
 
 
-
-
 class Site(object):
     def __init__(self, package, title="Havaiana Powered Site",
                  renderers=None):
@@ -65,11 +63,11 @@ class Site(object):
         self.classes_map = {}
 
         for item in self.classes:
-           self.classes_map[item[1].plural_name] = item
+            self.classes_map[item[1].plural_name] = item
 
     def _map_urls(self):
         self.app.add_url_rule('/change-data-code/<data_code>',
-            'change_data_code', self.change_data_code)
+                              'change_data_code', self.change_data_code)
         self.app.add_url_rule("/new/<name>", "new", self.new,
                               methods=['GET', 'POST'])
         self.app.add_url_rule("/edit/<name>/<pk_>", "new", self.new,
@@ -81,7 +79,8 @@ class Site(object):
         self.app.add_url_rule('/media/<path:filename>', "custom_static",
                               self.custom_static)
         self.app.add_url_rule('/absolute//<path:filename>',
-            "custom_absolute_static", self.custom_absolute_static)
+                              "custom_absolute_static",
+                              self.custom_absolute_static)
         self.app.add_url_rule('/', "index", self.index)
 
         @self.app.errorhandler(404)
@@ -166,7 +165,8 @@ class Site(object):
         try:
             item = self.classes_map[name]
         except KeyError:
-            data_dict['message'] = "The class <strong>%s</strong> does not exist"  % name
+            data_dict['message'] = \
+                "The class <strong>%s</strong> does not exist" % name
             return render_template("404.html", **data_dict), 404
 
         cls = item[1]
@@ -205,21 +205,26 @@ class Site(object):
                 grid_item = [(item, item.primary_key)]
                 for field in fields:
                     # here is where I render the widgets.
-                    class_renderers = self.renderers[item.__class__.__name__].items() \
-                        if item.__class__.__name__ in self.renderers else []
-                    grid_item.append(render_field(field, item, class_renderers))
+                    if item.__class__.__name__ in self.renderers:
+                        _class_name = item.__class__.__name__
+                        class_renderers = self.renderers[_class_name].items()
+                    else:
+                        class_renderers = []
+                    grid_item.append(render_field(field, item,
+                                                  class_renderers))
                 grid_items.append(grid_item)
             data_dict['items'] = grid_items
 
             #pagination handling
             pagination = Pagination(total=len(items), page=page,
-                search=False, record_name=cls.plural_name,
-                per_page=ITEMS_PER_PAGE, alignment="centered")
+                                    search=False, record_name=cls.plural_name,
+                                    per_page=ITEMS_PER_PAGE,
+                                    alignment="centered")
             data_dict['pagination'] = pagination
 
             # render the chart if it's configured
             if cls.__name__ in self.renderers and \
-                "__index_chart" in self.renderers[cls.__name__]:
+                    "__index_chart" in self.renderers[cls.__name__]:
                 chart = self.renderers[cls.__name__]["__index_chart"]()
                 data_dict["index_chart"] = chart.render(items)
 
@@ -232,7 +237,7 @@ class Site(object):
             params = {getattr(cls, "pk_field"): pk_}
             item = cls.get(**params)
             if item is None:
-                data_dict['message'] = "The item with id <strong>%s</strong> does not exist for class %s"  % (pk_, name)
+                data_dict['message'] = "The item with id <strong>%s</strong> does not exist for class %s" % (pk_, name)
                 return render_template("404.html", **data_dict), 404
 
             # rendering the fields for the class.
@@ -241,7 +246,7 @@ class Site(object):
                 attrs.append(render_field(field, item, class_renderers))
             for bw_rel in item.backwards_relations:
                 attrs.append(render_field(bw_rel, item, class_renderers,
-                                            True))
+                                          True))
 
             data_dict['item'] = item
             data_dict['pk'] = pk_
