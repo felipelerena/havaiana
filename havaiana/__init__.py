@@ -40,7 +40,7 @@ class Site(object):
         data = {}
 
         data['title'] = self.title
-        data['data_code'] = Ojota.CURRENT_DATA_CODE
+        data['data_code'] = Ojota.get_current_data_code()
         if data['data_code'] == "":
             data['data_code'] = "Root"
         data['data_codes'] = get_data_codes()
@@ -118,7 +118,7 @@ class Site(object):
                 data = request.form
             else:
                 update = True
-                data = cls.get(pk_)
+                data = cls.one(pk_)
 
             form = get_form(cls, data, update)
             # validate and save if there is data in to save.
@@ -140,7 +140,7 @@ class Site(object):
         if self.deletable:
             item = self.classes_map[name]
             cls = item[1]
-            element = cls.get(pk_)
+            element = cls.one(pk_)
             # show confirmation data.
 
             if request.method == 'GET':
@@ -185,7 +185,7 @@ class Site(object):
             if order is None and cls.default_order is not None:
                 order = cls.default_order
 
-            items = cls.all(sorted=order)
+            items = cls.many(sorted=order)
 
             # getting the fields for all the items.
             fields = []
@@ -235,7 +235,7 @@ class Site(object):
                 if item[0] in self.renderers else []
 
             params = {getattr(cls, "pk_field"): pk_}
-            item = cls.get(**params)
+            item = cls.one(**params)
             if item is None:
                 data_dict['message'] = "The item with id <strong>%s</strong> does not exist for class %s" % (pk_, name)
                 return render_template("404.html", **data_dict), 404
