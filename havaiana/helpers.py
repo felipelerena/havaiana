@@ -5,7 +5,7 @@ from wtforms import Form, TextField, SelectField
 
 import ojota.sources
 
-from ojota import Ojota
+from ojota import Ojota, current_data_code
 
 
 def get_ojota_children(package):
@@ -13,7 +13,8 @@ def get_ojota_children(package):
     items = getmembers(package)
     for item in items:
         try:
-            if item[0] != "Ojota" and issubclass(item[1], Ojota):
+            if item[0] not in ("Ojota", "OjotaHierarchy") and \
+                    issubclass(item[1], Ojota):
                 hijos.append(item)
         except TypeError:
             pass
@@ -46,3 +47,10 @@ def get_form(cls, form_data, update=False):
     else:
         form = HavaianaForm(form_data)
     return form
+
+
+def with_data_code(f):
+    def _inner(self, *args, **kwargs):
+        current_data_code(self.data_code)
+        return f(self, *args, **kwargs)
+    return _inner
