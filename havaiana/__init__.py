@@ -8,14 +8,16 @@ from flask import Flask, render_template, redirect, request, flash
 from flask.ext.paginate import Pagination
 
 from config import ITEMS_PER_PAGE, SECRET_KEY
-from helpers import get_ojota_children, get_data_codes, get_form
+from helpers import get_ojota_children, get_data_codes, get_form, with_data_code
 from renderers import render_field
 
 
 class Site(object):
-    def __init__(self, package, title="Havaiana Powered Site",
-                 renderers=None):
-        self.package = package
+    def __init__(self, packages, title="Havaiana Powered Site",
+                 renderers=None, data_code=None):
+        if type(packages).__name__ == "module":
+            packages = [packages]
+        self.packages = packages
         self.title = title
 
         #adding renderers
@@ -28,6 +30,7 @@ class Site(object):
         self.editable = True
         self.deletable = True
         self.sortable = True
+        self.data_code = data_code
 
         self._create_app()
 
@@ -52,7 +55,10 @@ class Site(object):
         return data
 
     def _create_app(self):
-        self.classes = get_ojota_children(self.package)
+        self.classes = []
+        for package in self.packages:
+            children = get_ojota_children(package)
+            self.classes.extend(children)
         self.app = Flask(__name__)
         # template related stuff
         self.template_path = os.path.join(os.path.dirname(__file__),
@@ -97,12 +103,15 @@ class Site(object):
         self.app.secret_key = SECRET_KEY
         self.app.run(host="0.0.0.0")
 
+    @with_data_code
     def change_data_code(self, data_code):
         if data_code == 'Root':
             data_code = ''
         current_data_code(data_code)
+        self.data_code = data_code
         return redirect('/')
 
+    @with_data_code
     def new(self, name, pk_=None):
         data_dict = self._default_data()
         # error handling
@@ -136,6 +145,7 @@ class Site(object):
             data_dict['class_single_name'] = cls.__name__
             return render_template('form.html', **data_dict)
 
+    @with_data_code
     def delete(self, name, pk_=None):
         if self.deletable:
             item = self.classes_map[name]
@@ -159,6 +169,7 @@ class Site(object):
             data_dict['message'] = "Deletion is not supported"
             return render_template("404.html", **data_dict), 403
 
+    @with_data_code
     def table(self, name, pk_=None):
         data_dict = self._default_data()
         # manage key error.
@@ -266,6 +277,7 @@ class Site(object):
         filename = parts[-1]
         return send_file("/%s/%s" % (dir_name, filename))
 
+    @with_data_code
     def index(self):
         data_dict = self._default_data()
 

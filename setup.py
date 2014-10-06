@@ -11,7 +11,7 @@ except ImportError:
 
 setup(
     name='Havaiana',
-    version='2.4.2',
+    version='2.5.0',
     author='Felipe Lerena',
     author_email='felipelerena@gmail.com',
     packages=['havaiana'],
