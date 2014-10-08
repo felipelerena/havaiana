@@ -10,8 +10,8 @@ def default_renderer(field, item, backwards=False):
         items = []
         for element in value:
             item_ = '<a href="/%s/%s">%s</a>' % (element.plural_name,
-                                                element.primary_key,
-                                                element)
+                                                 element.primary_key,
+                                                 element)
             items.append(item_)
         value = ", ".join(items)
         related = False
@@ -19,7 +19,7 @@ def default_renderer(field, item, backwards=False):
         related = False
     else:
         related = "/%s/%s" % (relation_data[0].plural_name, value)
-        value = relation_data[0].get(value)
+        value = relation_data[0].one(value)
         field = relation_data[1]
 
     if field == item.pk_field:
