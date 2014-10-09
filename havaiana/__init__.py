@@ -109,7 +109,7 @@ class Site(object):
             data_code = ''
         current_data_code(data_code)
         self.data_code = data_code
-        return redirect('/')
+        return redirect(request.referrer)
 
     @with_data_code
     def new(self, name, pk_=None):
