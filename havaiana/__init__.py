@@ -131,12 +131,15 @@ class Site(object):
 
             form = get_form(cls, data, update)
             # validate and save if there is data in to save.
-            if request.method == 'POST' and form.validate():
-                element = cls(**form.data)
-                element.save()
-                flash('%s successfully saved' % cls.__name__)
-                redirect_url = "/%s/%s" % (name, element.primary_key)
-                return redirect(redirect_url)
+            if request.method == 'POST':
+                if form.validate():
+                    element = cls(**form.data)
+                    element.save()
+                    flash('%s successfully saved' % cls.__name__)
+                    redirect_url = "/%s/%s" % (name, element.primary_key)
+                    return redirect(redirect_url)
+                else:
+                    flash("error saving the form", category="error")
 
             #adding dict data
             data_dict['form'] = form
