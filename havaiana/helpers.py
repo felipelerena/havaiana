@@ -20,15 +20,22 @@ def get_ojota_children(package):
             pass
     return hijos
 
+
 def get_data_codes():
     path = ojota.sources._DATA_SOURCE
     dirs = [dir_ for dir_ in os.listdir(path)
             if os.path.isdir(os.path.join(path, dir_))]
     return ['Root'] + sorted(dirs)
 
+
 def get_form(cls, form_data, update=False):
     class HavaianaForm(Form):
-        pass
+        def validate(self, *args, **kwargs):
+            valid = False
+            if form_data[cls.pk_field] != "":
+                valid = Form.validate(self, *args, **kwargs)
+            return valid
+
     fields = [cls.pk_field]
     if hasattr(form_data, "fields"):
         fields += form_data.fields
@@ -38,7 +45,7 @@ def get_form(cls, form_data, update=False):
         text_field = TextField()
         setattr(HavaianaForm, field, text_field)
     for key, value in cls.relations.items():
-        choices = [(obj.primary_key, obj) for obj in  value[0].all()]
+        choices = [(obj.primary_key, obj) for obj in value[0].all()]
         text = value[1].replace("_", "  ").capitalize()
         text_field = SelectField(text, choices=choices)
         setattr(HavaianaForm, key, text_field)

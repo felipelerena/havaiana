@@ -4,11 +4,16 @@ def default_renderer(field, item, backwards=False):
     else:
         required = False
     value = getattr(item, field)
+    value = value.encode('ascii', 'xmlcharrefreplace')
+    value = value.replace("<", "&lt;")
+    value = value.replace(">", "&gt;")
     relation_data = item.relations.get(field)
 
     if backwards:
         items = []
         for element in value:
+            if len(element) > 40:
+                element = element[:40] + " ..."
             item_ = '<a href="/%s/%s">%s</a>' % (element.plural_name,
                                                  element.primary_key,
                                                  element)
@@ -28,6 +33,7 @@ def default_renderer(field, item, backwards=False):
         field = field.replace("_", "  ").capitalize()
 
     return (field, value, required, related)
+
 
 def render_field(field, item, renderers, backwards=False):
     render = default_renderer
