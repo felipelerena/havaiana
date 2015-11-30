@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import food_data
 
 from havaiana import Site
@@ -9,9 +10,9 @@ def ingredients_list(field, item, backwards):
     items = []
     for element in ingredients:
         item = '<li><a href="/Ingredients/%s">%s</a></li>' % (element.primary_key,
-                                                     element)
+                                                              element)
         items.append(item)
-    value = "<ul>%s</ul>" %  "".join(items)
+    value = "<ul>%s</ul>" % "".join(items)
     related = False
 
     return (field, value, required, related)
@@ -19,8 +20,8 @@ def ingredients_list(field, item, backwards):
 
 class RainChartView(LineChart):
     def __init__(self):
-       LineChart.__init__(self, "Recipes uploaded to the site",
-                          "uploads", 800, 400)
+        LineChart.__init__(self, "Recipes uploaded to the site",
+                           "uploads", 800, 400)
 
     def get_data(self, data):
         keys = []

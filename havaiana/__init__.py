@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import os
 
 from jinja2 import FileSystemLoader
@@ -7,9 +9,10 @@ from flask.helpers import send_file
 from flask import Flask, render_template, redirect, request, flash
 from flask.ext.paginate import Pagination
 
-from config import ITEMS_PER_PAGE, SECRET_KEY
-from helpers import get_ojota_children, get_data_codes, get_form, with_data_code
-from renderers import render_field
+from .config import ITEMS_PER_PAGE, SECRET_KEY
+from .helpers import (get_ojota_children, get_data_codes, get_form,
+                      with_data_code)
+from .renderers import render_field
 
 
 class Site(object):
@@ -221,7 +224,7 @@ class Site(object):
                     # here is where I render the widgets.
                     if item.__class__.__name__ in self.renderers:
                         _class_name = item.__class__.__name__
-                        class_renderers = self.renderers[_class_name].items()
+                        class_renderers = list(self.renderers[_class_name].items())
                     else:
                         class_renderers = []
                     grid_item.append(render_field(field, item,
@@ -245,7 +248,7 @@ class Site(object):
             template = 'table.html'
         else:
             #getting the renderers for the class
-            class_renderers = self.renderers[item[0]].items() \
+            class_renderers = list(self.renderers[item[0]].items()) \
                 if item[0] in self.renderers else []
 
             params = {getattr(cls, "pk_field"): pk_}
@@ -285,7 +288,7 @@ class Site(object):
         data_dict = self._default_data()
 
         data_dict['classes'] = [[],  []]
-        for key, value in self.classes_map.items():
+        for key, value in list(self.classes_map.items()):
             class_ = value[1]
             index = 0 if class_.data_in_root else 1
             data_dict['classes'][index].append(key)

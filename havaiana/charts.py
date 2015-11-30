@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import pygal
 
 from pygal.style import Style
@@ -12,6 +13,7 @@ havaiana_style = Style(
     opacity_hover='.9',
     transition='400ms ease-in',
     colors=('#DF6E1E', '#AD1D28', '#4D3A7D', '#48CA38', '#27666D'))
+
 
 class Chart(object):
     def __init__(self, title):

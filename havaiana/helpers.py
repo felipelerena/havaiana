@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import os
 
 from inspect import getmembers
@@ -44,7 +45,7 @@ def get_form(cls, form_data, update=False):
     for field in fields:
         text_field = TextField()
         setattr(HavaianaForm, field, text_field)
-    for key, value in cls.relations.items():
+    for key, value in list(cls.relations.items()):
         choices = [(obj.primary_key, obj) for obj in value[0].all()]
         text = value[1].replace("_", "  ").capitalize()
         text_field = SelectField(text, choices=choices)
