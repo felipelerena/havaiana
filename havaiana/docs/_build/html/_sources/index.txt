@@ -8,7 +8,7 @@ Welcome to Havaiana's documentation!
 
 Havaiana is a dynamic web interface for Ojota (http://ojota.rtfd.org).
 
-Havaiana is Free Software! you can check the code at http://bitbucket.org/felipelerena/havaiana
+Havaiana is Free Software! you can check the code at http://github.com/felipelerena/havaiana
 
 How to use it
 =======================
@@ -152,7 +152,7 @@ From source
 
 .. code-block:: bash
 
-    hg clone ssh://hg@bitbucket.org/felipelerena/Havaiana
+    git clone git@github.com:felipelerena/havaiana.git
     sudo python setup.py install
 
 Table of contents
