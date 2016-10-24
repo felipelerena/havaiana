@@ -98,11 +98,11 @@ class Site(object):
             data_dict['message'] = "Ugly <strong>404</strong> is Ugly"
             return render_template('404.html', **data_dict), 404
 
-    def serve(self):
+    def serve(self, debug=False):
         self._create_map()
         self._map_urls()
 
-        self.app.debug = True
+        self.app.debug = debug
         self.app.secret_key = SECRET_KEY
         self.app.run(host="0.0.0.0")
 
