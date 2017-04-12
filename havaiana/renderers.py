@@ -4,7 +4,7 @@ def default_renderer(field, item, backwards=False):
     else:
         required = False
     value = getattr(item, field)
-    value = value.encode('ascii', 'xmlcharrefreplace')
+    value = value.encode('ascii', 'xmlcharrefreplace').decode()
     value = value.replace("<", "&lt;")
     value = value.replace(">", "&gt;")
     relation_data = item.relations.get(field)
